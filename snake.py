@@ -3,16 +3,17 @@ import turtle
 import random
 
 # Define program constants
-WIDTH = 500
-HEIGHT = 500
+WIDTH = 600
+HEIGHT = 600
 DELAY = 400  # Milliseconds
-FOOD_SIZE = 10
+FOOD_SIZE = 32
+SNAKE_SIZE = 20
 
 offsets = {
-    "up": (0, 20),
-    "down": (0, -20),
-    "left": (-20, 0),
-    "right": (20, 0)
+    "up": (0, SNAKE_SIZE),
+    "down": (0, -SNAKE_SIZE),
+    "left": (-SNAKE_SIZE, 0),
+    "right": (SNAKE_SIZE, 0)
 }
 
 def bind_direction_keys():
@@ -55,8 +56,12 @@ def game_loop():
         if not food_collision():
             snake.pop(0)  # Remove last segment of snake and keep the same length unless fed
 
-        # Draw snake for the first time.
-        for segment in snake:
+        # Draw snake
+        stamper.shape("assets/snake-head.gif")
+        stamper.goto(snake[-1][0], snake[-1][1])
+        stamper.stamp()
+        stamper.shape("circle")
+        for segment in snake[:-1]:
             stamper.goto(segment[0], segment[1])
             stamper.stamp()
 
@@ -93,7 +98,7 @@ def get_distance(pos1, pos2):
 def reset():
     global score, snake, snake_direction, food_pos
     score = 0
-    snake = [[0, 0], [20, 0], [40, 0], [60, 0]]
+    snake = [[0, 0], [SNAKE_SIZE, 0], [SNAKE_SIZE * 2, 0], [SNAKE_SIZE * 3, 0]]
     snake_direction = "up"
     food_pos = get_random_food_pos()
     food.goto(food_pos)
@@ -104,25 +109,25 @@ def reset():
 screen = turtle.Screen()
 screen.setup(WIDTH, HEIGHT)  # Set the dimensions of the Turtle Graphics window.
 screen.title("Snake")
-screen.bgcolor("#9fd089")
+screen.bgpic("assets/bg2.gif")
+screen.register_shape("assets/pizza-slice.gif")
+screen.register_shape("assets/snake-head.gif")
 screen.tracer(0)  # Turn off automatic animation.
 
 # Event handlers
 screen.listen()
-screen.onkey(go_up, "Up")
-screen.onkey(go_right, "Right")
-screen.onkey(go_down, "Down")
-screen.onkey(go_left, "Left")
+bind_direction_keys()
 
 # Create a turtle to do your bidding
 stamper = turtle.Turtle()
-stamper.shape("square")
+stamper.shape("circle")
+stamper.color("#009ef1")
+# stamper.shape("assets/snake-head.gif")
 stamper.penup()
 
 # Food
 food = turtle.Turtle()
-food.shape("circle")
-food.color("red")
+food.shape("assets/pizza-slice.gif")
 food.shapesize(FOOD_SIZE / 20)
 food.penup()
 
