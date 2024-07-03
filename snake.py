@@ -5,7 +5,7 @@ import random
 # Define program constants
 WIDTH = 600
 HEIGHT = 600
-DELAY = 400  # Milliseconds
+DELAY = 100  # Milliseconds
 FOOD_SIZE = 32
 SNAKE_SIZE = 20
 
@@ -15,6 +15,32 @@ offsets = {
     "left": (-SNAKE_SIZE, 0),
     "right": (SNAKE_SIZE, 0)
 }
+
+# High score
+high_score = 0
+
+# Load the high score if it exists
+try:
+    with open("high_score.txt", "r") as file:
+        high_score = int(file.read())
+except FileNotFoundError:
+    pass
+
+def update_high_score():
+    global high_score
+    if score > high_score:
+        high_score = score
+        with open("high_score.txt", "w") as file:
+            file.write(str(high_score))
+
+def update_snake_color():
+    global snake_color
+    if  score <= 5:
+        snake_color = "#009ef1"
+    elif score > 5 and score <= 10:
+        snake_color = "blue"
+    else:
+        snake_color = "pink"
 
 def bind_direction_keys():
     screen.onkey(lambda:set_snake_direction("up"), "Up")
@@ -56,17 +82,21 @@ def game_loop():
         if not food_collision():
             snake.pop(0)  # Remove last segment of snake and keep the same length unless fed
 
+        # Update snake color based on score
+        update_snake_color()
+
         # Draw snake
         stamper.shape("assets/snake-head.gif")
         stamper.goto(snake[-1][0], snake[-1][1])
         stamper.stamp()
         stamper.shape("circle")
+        stamper.color(snake_color) 
         for segment in snake[:-1]:
             stamper.goto(segment[0], segment[1])
             stamper.stamp()
 
         # Refresh screen
-        screen.title(f"Snake Game. Score: {score}")
+        screen.title(f"Snake Game. Score: {score} High Score: {high_score}")
         screen.update()
 
         # Rinse and repeat
@@ -76,7 +106,8 @@ def game_loop():
 def food_collision():
     global food_pos, score
     if get_distance(snake[-1], food_pos) < 20:
-        score += 1  # score = score + 1
+        score += 1
+        update_high_score()
         food_pos = get_random_food_pos()
         food.goto(food_pos)
         return True
@@ -103,7 +134,6 @@ def reset():
     food_pos = get_random_food_pos()
     food.goto(food_pos)
     game_loop()
-
 
 # Create a window where we will do our drawing.
 screen = turtle.Screen()
