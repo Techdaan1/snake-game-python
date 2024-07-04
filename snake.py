@@ -64,7 +64,10 @@ def set_snake_direction(direction):
 def toggle_pause(x, y):
     global is_paused
     is_paused = not is_paused
-    if not is_paused:
+    if is_paused:
+        pause_turtle.write("Paused", align="center", font=("Arial", 24, "bold"))
+    else: 
+        pause_turtle.clear()
         game_loop() # Restart game loop if unpaused
 
 def game_loop():
@@ -159,6 +162,12 @@ stamper = turtle.Turtle()
 stamper.shape("circle")
 stamper.color("#009ef1")
 stamper.penup()
+
+# Create a turtle for the pause text
+pause_turtle = turtle.Turtle()
+pause_turtle.hideturtle()
+pause_turtle.penup()
+pause_turtle.goto(0, 0)
 
 # Food
 food = turtle.Turtle()
