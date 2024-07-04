@@ -18,6 +18,8 @@ offsets = {
 
 # High score
 high_score = 0
+# Track if game is paused
+is_paused = False
 
 # Load the high score if it exists
 try:
@@ -59,44 +61,51 @@ def set_snake_direction(direction):
     if direction != opposite_directions[snake_direction]:
         snake_direction = direction
 
+def toggle_pause(x, y):
+    global is_paused
+    is_paused = not is_paused
+    if not is_paused:
+        game_loop() # Restart game loop if unpaused
+
 def game_loop():
-    stamper.clearstamps()  # Remove existing stamps made by stamper
+    if not is_paused:
+        stamper.clearstamps()  # Remove existing stamps made by stamper
 
-    new_head = snake[-1].copy()
-    new_head[0] += offsets[snake_direction][0]
-    new_head[1] += offsets[snake_direction][1]
+        new_head = snake[-1].copy()
+        new_head[0] += offsets[snake_direction][0]
+        new_head[1] += offsets[snake_direction][1]
 
-    # Check collisions
-    if new_head in snake or new_head[0] < - WIDTH / 2 or new_head[0] > WIDTH / 2 \
-            or new_head[1] < - HEIGHT / 2 or new_head[1] > HEIGHT / 2:
-        reset()
-    else:
-        # Add new head to snake body
-        snake.append(new_head)
+        # Check collisions
+        if new_head in snake or new_head[0] < - WIDTH / 2 or new_head[0] > WIDTH / 2 \
+                or new_head[1] < - HEIGHT / 2 or new_head[1] > HEIGHT / 2:
+            reset()
+        else:
+            # Add new head to snake body
+            snake.append(new_head)
 
-        # Check food collision
-        if not food_collision():
-            snake.pop(0)  # Remove last segment of snake and keep the same length unless fed
+            # Check food collision
+            if not food_collision():
+                snake.pop(0)  # Remove last segment of snake and keep the same length unless fed
 
-        # Update snake color based on score
-        update_snake_color()
+            # Update snake color based on score
+            update_snake_color()
 
-        # Draw snake
-        stamper.shape("assets/snake-head.gif")
-        stamper.goto(snake[-1][0], snake[-1][1])
-        stamper.stamp()
-        stamper.shape("circle")
-        stamper.color(snake_color) 
-        for segment in snake[:-1]:
-            stamper.goto(segment[0], segment[1])
+            # Draw snake
+            stamper.shape("assets/snake-head.gif")
+            stamper.goto(snake[-1][0], snake[-1][1])
             stamper.stamp()
+            stamper.shape("circle")
+            stamper.color(snake_color) 
+            for segment in snake[:-1]:
+                stamper.goto(segment[0], segment[1])
+                stamper.stamp()
 
-        # Refresh screen
-        screen.title(f"Snake Game. Score: {score} High Score: {high_score}")
-        screen.update()
+            # Refresh screen
+            screen.title(f"Snake Game. Score: {score} High Score: {high_score}")
+            screen.update()
 
-        # Rinse and repeat
-        turtle.ontimer(game_loop, DELAY)
+            # Rinse and repeat
+            turtle.ontimer(game_loop, DELAY)
 
 
 def food_collision():
@@ -143,6 +152,7 @@ screen.tracer(0)  # Turn off automatic animation
 # Event handlers
 screen.listen()
 bind_direction_keys()
+screen.onclick(toggle_pause)  # Bind mouse click to toggle pause
 
 # Create a turtle to do your bidding
 stamper = turtle.Turtle()
