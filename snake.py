@@ -37,7 +37,7 @@ def update_snake_color():
     global snake_color
     if  score <= 5:
         snake_color = "#009ef1"
-    elif score > 5 and score <= 10:
+    elif score <= 10:
         snake_color = "blue"
     else:
         snake_color = "pink"
@@ -50,18 +50,14 @@ def bind_direction_keys():
 
 def set_snake_direction(direction):
     global snake_direction
-    if direction == "up":
-        if snake_direction != "down": # No self-collision simply by pressing wrong key
-            snake_direction = "up"
-    elif direction == "down":
-        if snake_direction != "up": # No self-collision simply by pressing wrong key
-            snake_direction = "down"
-    elif direction == "left":
-        if snake_direction != "right": # No self-collision simply by pressing wrong key
-            snake_direction = "left"
-    elif direction == "right":
-        if snake_direction != "left": # No self-collision simply by pressing wrong key
-            snake_direction = "right"
+    opposite_directions = {
+        "up": "down",
+        "down": "up",
+        "left": "right",
+        "right": "left"
+    }
+    if direction != opposite_directions[snake_direction]:
+        snake_direction = direction
 
 def game_loop():
     stamper.clearstamps()  # Remove existing stamps made by stamper
@@ -75,7 +71,7 @@ def game_loop():
             or new_head[1] < - HEIGHT / 2 or new_head[1] > HEIGHT / 2:
         reset()
     else:
-        # Add new head to snake body.
+        # Add new head to snake body
         snake.append(new_head)
 
         # Check food collision
@@ -135,14 +131,14 @@ def reset():
     food.goto(food_pos)
     game_loop()
 
-# Create a window where we will do our drawing.
+# Create a window where we will do our drawing
 screen = turtle.Screen()
-screen.setup(WIDTH, HEIGHT)  # Set the dimensions of the Turtle Graphics window.
+screen.setup(WIDTH, HEIGHT)  # Set the dimensions of the Turtle Graphics window
 screen.title("Snake")
 screen.bgpic("assets/bg2.gif")
 screen.register_shape("assets/pizza-slice.gif")
 screen.register_shape("assets/snake-head.gif")
-screen.tracer(0)  # Turn off automatic animation.
+screen.tracer(0)  # Turn off automatic animation
 
 # Event handlers
 screen.listen()
@@ -152,7 +148,6 @@ bind_direction_keys()
 stamper = turtle.Turtle()
 stamper.shape("circle")
 stamper.color("#009ef1")
-# stamper.shape("assets/snake-head.gif")
 stamper.penup()
 
 # Food
