@@ -65,9 +65,14 @@ def toggle_pause(x, y):
     global is_paused
     is_paused = not is_paused
     if is_paused:
+        screen.bgpic("")
+        screen.bgcolor("grey")
         pause_turtle.write("Paused", align="center", font=("Arial", 24, "bold"))
+        overlay.showturtle()
     else: 
+        screen.bgpic("assets/bg2.gif")
         pause_turtle.clear()
+        overlay.hideturtle()
         game_loop() # Restart game loop if unpaused
 
 def game_loop():
@@ -168,6 +173,15 @@ pause_turtle = turtle.Turtle()
 pause_turtle.hideturtle()
 pause_turtle.penup()
 pause_turtle.goto(0, 0)
+
+# Create an overlay for the paused state
+overlay = turtle.Turtle()
+overlay.color("grey")
+overlay.shape("square")
+overlay.shapesize(stretch_wid=HEIGHT / 20, stretch_len=WIDTH / 20)
+overlay.penup()
+overlay.goto(0, 0)
+overlay.hideturtle()
 
 # Food
 food = turtle.Turtle()
